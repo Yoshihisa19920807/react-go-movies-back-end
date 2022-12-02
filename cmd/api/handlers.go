@@ -18,6 +18,18 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		Message: "Go Movies up and running",
 		Version: "1.0.0",
 	}
+	// ↑は
+	// hoge_struct := struct {
+	//   Status string `json:"status"`; // <キー> <型> <デフォルト>
+	//   Message string `json:"message"`;
+	//   Version string `json:"version"`
+	// }
+	// var payload = hoge_struct{
+	// 	Status: "active",
+	// 	Message: "Go Movies up and running",
+	// 	Version: "1.0.0",
+	// }
+	// と同じ
 
 	out, err := json.Marshal(payload)
 	if err != nil {
