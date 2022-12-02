@@ -26,12 +26,9 @@ func main() {
 
 	log.Println("Starting application on port", port)
 
-	// when someone calls listenAndServe it calls port 8080 on our web server and they're looking for just the root level of the application and execute "Hello" function
-	http.HandleFunc("/", Hello)
-
 	// start a web server
 	// 宣言と代入を一緒にするパターン (var省略)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())
 
 	if err != nil {
 		log.Fatal(err)
