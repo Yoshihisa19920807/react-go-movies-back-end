@@ -46,7 +46,9 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 	var movies []models.Movie
 
-	rd, _ := time.Parse("2010-01-09", "2009-03-20")
+	// time.Parse(<format or example>, <value>)
+	rd, _ := time.Parse("2006-01-02", "2010-01-09")
+	fmt.Print(rd)
 	_500DaysOfSummer := models.Movie {
 		Id: 1,
 		Title: "500 days of Summer",
@@ -54,17 +56,22 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 		MPAARating: "PG-13",
 		RunTime: 95,
 		Description: "Romance which even men can enjoy.",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	movies = append(movies, _500DaysOfSummer)
 
+	rd, _ = time.Parse("2006-01-02", "2009-03-20")
 	YesMan:= models.Movie {
-		Id: 1,
+		Id: 2,
 		Title: "Yes Man",
 		ReleaseDate: rd,
 		MPAARating: "PG-13",
 		RunTime: 104,
 		Description: "Comedy that will encourage you to take a new step.",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	movies = append(movies, YesMan)
