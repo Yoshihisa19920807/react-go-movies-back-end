@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/internal/models"
+	"backend/internal/models" // root directory is defined as "backend" which is declared in go.mod
 	"encoding/json"
 	"fmt"
 	"net/http"
