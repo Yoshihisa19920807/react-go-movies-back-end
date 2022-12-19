@@ -83,6 +83,7 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 
 	var out []byte
 
+	// json.Marshal() returns nil if the argument is an empty slice
 	if len(movies) == 0 {
 		out, err = json.Marshal([]string{})
 	} else {
