@@ -2,7 +2,7 @@ package main
 
 import (
 	// root directory is defined as "backend" which is declared in go.mod
-	"encoding/json"
+
 	"fmt"
 	"net/http"
 )
@@ -32,14 +32,17 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 	// }
 	// と同じ
 
-	out, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// out, err := json.Marshal(payload)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(out)
+
+	_ = app.writeJSON(w, http.StatusOK, payload)
+
 }
 
 func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
@@ -81,21 +84,9 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var out []byte
-
-	// json.Marshal() returns nil if the argument is an empty slice
-	if len(movies) == 0 {
-		out, err = json.Marshal([]string{})
-	} else {
-		out, err = json.Marshal(movies)
-	}
-	fmt.Println(out)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(out)
+	_ = app.writeJSON(w, http.StatusOK, movies)
 
 }
