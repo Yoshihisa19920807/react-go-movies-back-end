@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 			created_at, updated_at
 		from
 			movies
-		ordered_by
+		order by
 			title
 	`
 
@@ -55,8 +56,12 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 		)
 
 		if err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
+
+		movies = append(movies, &movie)
 	}
+
 	return movies, nil
 }
