@@ -96,7 +96,7 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// read json payload
 	var requestPayload struct {
 		Email    string `json:"email"`
-		Password string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	err := app.readJSON(w, r, &requestPayload)
@@ -108,6 +108,7 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// validate user against database
 	user, err := app.DB.GetUserByEmail(requestPayload.Email)
 	if err != nil {
+		fmt.Println(err)
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
 		return
 	}
@@ -115,6 +116,7 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// check password
 	valid, err := user.PasswordMatches(requestPayload.Password)
 	if err != nil || !valid {
+		println("wrong pass")
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
 		return
 	}
