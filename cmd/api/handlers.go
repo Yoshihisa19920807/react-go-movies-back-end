@@ -4,6 +4,7 @@ import (
 	// root directory is defined as "backend" which is declared in go.mod
 
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -111,5 +112,10 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, err)
 		return
 	}
+
+	log.Println(tokens.Token)
+	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
+	http.SetCookie(w, refreshCookie)
+
 	w.Write([]byte(tokens.Token))
 }
