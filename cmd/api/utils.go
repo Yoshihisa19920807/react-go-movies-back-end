@@ -20,12 +20,11 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 	var err error
 
 	// json.Marshal() returns nil if the argument is an empty slice
-	if reflect.ValueOf(data).Len() == 0 {
+	if reflect.TypeOf(data).Kind() == reflect.Slice && reflect.ValueOf(data).Len() == 0 {
 		out, err = json.Marshal([]string{})
 	} else {
 		out, err = json.Marshal(data)
 	}
-
 	// out, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
