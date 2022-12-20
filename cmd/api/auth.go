@@ -8,14 +8,14 @@ import (
 )
 
 type Auth struct {
-	Issuer         string
-	Audience       string
-	Secret         string
-	TokenExpiryIn  time.Duration
-	RefreshExpiray time.Duration
-	CookieDomain   string
-	CookiePath     string
-	CookieName     string
+	Issuer           string
+	Audience         string
+	Secret           string
+	TokenExpiryIn    time.Duration
+	RefreshExpirayIn time.Duration
+	CookieDomain     string
+	CookiePath       string
+	CookieName       string
 }
 
 type JwtUser struct {
@@ -35,7 +35,7 @@ type Claims struct {
 
 func (j *Auth) GenerateTokenPair(user *JwtUser) (TokenPairs, error) {
 	// Create a token
-	token := jwt.New(jwt.SigningMethodES256)
+	token := jwt.New(jwt.SigningMethodHS256)
 
 	// Set the claims
 	claims := token.Claims.(jwt.MapClaims)
@@ -57,13 +57,13 @@ func (j *Auth) GenerateTokenPair(user *JwtUser) (TokenPairs, error) {
 	}
 
 	// Create refresh token and set claims
-	refreshToken := jwt.New(jwt.SigningMethodES256)
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
 	refreshClaims := refreshToken.Claims.(jwt.MapClaims)
 	refreshClaims["sub"] = fmt.Sprint(user.ID)
 	refreshClaims["iat"] = time.Now().UTC().Unix()
 
 	// Set the expiry for the refresh token
-	refreshClaims["exp"] = time.Now().Add(j.RefreshExpiray).Unix()
+	refreshClaims["exp"] = time.Now().Add(j.RefreshExpirayIn).Unix()
 
 	// Create signed refresh token
 	signedRefreshToken, err := refreshToken.SignedString([]byte(j.Secret))
