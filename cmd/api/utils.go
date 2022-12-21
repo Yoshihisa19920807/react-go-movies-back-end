@@ -22,16 +22,16 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 	// json.Marshal() returns nil if the argument is an empty slice
 	if reflect.TypeOf(data).Kind() == reflect.Slice && reflect.ValueOf(data).Len() == 0 {
 		fmt.Println("empty slice")
+		println("empty slice")
 		out, err = json.Marshal([]string{})
 	} else {
 		out, err = json.Marshal(data)
 	}
 	// out, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err)
-	}
 
 	if err != nil {
+		println("marshal error")
+		fmt.Println(err)
 		return err
 	}
 

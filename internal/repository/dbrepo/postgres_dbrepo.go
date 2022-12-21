@@ -87,9 +87,6 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 
-	println(user.ID)
-	println(&user.ID)
-
 	return &user, nil // &<var>でpointerアドレスを返す
 }
 
@@ -98,7 +95,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	defer cancel()
 
 	query := `select id, email, first_name, last_name, password,
-	created_at, updated_at from users where email = $1`
+	created_at, updated_at from users where id = $1`
 	var user models.User
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
@@ -114,9 +111,6 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	println(user.ID)
-	println(&user.ID)
 
 	return &user, nil // &<var>でpointerアドレスを返す
 }

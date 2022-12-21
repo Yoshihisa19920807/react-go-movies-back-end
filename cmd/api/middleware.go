@@ -3,7 +3,7 @@ package main
 import "net/http"
 
 func (app *application) enableCORS(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 		if r.Method == "OPTIONS" {
@@ -12,7 +12,7 @@ func (app *application) enableCORS(h http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, X-CSRF-Token, Authorization")
 			return
 		} else {
-			h.ServeHTTP(w,r)
+			h.ServeHTTP(w, r)
 		}
 	})
 }
