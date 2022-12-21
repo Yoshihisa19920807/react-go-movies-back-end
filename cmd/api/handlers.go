@@ -159,6 +159,8 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 				return []byte(app.JWTSecret), nil
 			})
 			if err != nil {
+				fmt.Println("err parse with claims")
+				fmt.Println(err)
 				app.errorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
 				return
 			}
@@ -166,12 +168,16 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 			// get the user id from the token claims
 			userID, err := strconv.Atoi(claims.Subject)
 			if err != nil {
+				fmt.Println("err atoi")
+				fmt.Println(err)
 				app.errorJSON(w, errors.New("unknown user"), http.StatusUnauthorized)
 				return
 			}
 
 			user, err := app.DB.GetUserByID(userID)
 			if err != nil {
+				fmt.Println("err get user by id")
+				fmt.Println(err)
 				app.errorJSON(w, errors.New("user not found"), http.StatusUnauthorized)
 				return
 			}
@@ -189,4 +195,9 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 			app.writeJSON(w, http.StatusOK, tokenPairs)
 		}
 	}
+}
+
+func (app *application) logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, app.auth.GetExpiredRefreshCookie())
+	w.WriteHeader(http.StatusAccepted)
 }
