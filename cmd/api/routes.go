@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/logout", app.logout)
 
 	mux.Get("/movies", app.AllMovies)
+	mux.Get("/movies/{id}", app.GetMovie)
 
 	mux.Route("/admin", func(mux chi.Router) {
 		mux.Use(app.authRequired)
