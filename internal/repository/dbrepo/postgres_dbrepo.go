@@ -104,9 +104,9 @@ func (m *PostgresDBRepo) OneMovie(id int) (*models.Movie, error) {
 	for rows.Next() {
 		var g models.Genre
 		err := rows.Scan(
-			// copy the first element of the row to the destination (g.ID)
+			// copy the first element of the row to the destination (g.ID pointer)
 			&g.ID,
-			// copy the 2nd element of the row to the destination (g.Genre)
+			// copy the 2nd element of the row to the destination (g.Genre pointer)
 			&g.Genre,
 		)
 		if err != nil {
@@ -239,4 +239,30 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	}
 
 	return &user, nil // &<var>でpointerアドレスを返す
+}
+
+func (m *PostgresDBRepo) AllGenres() ([]*models.Genre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `select id, genre, created_at, updated_at from genres order by genre`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var genres []*models.Genre
+
+	for rows.Next() {
+		var g models.Genre
+		err := rows.Scan(&g.ID, &g.Genre, &g.CreatedAt, &g.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		// & is to pointer, * is to variable
+		genres = append(genres, &g)
+	}
+	return genres, nil
 }
