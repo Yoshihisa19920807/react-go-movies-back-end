@@ -1,3 +1,4 @@
+// この辺全部queryを投げて返ってきた結果を返す関数
 package dbrepo
 
 import (
@@ -19,6 +20,7 @@ func (m *PostgresDBRepo) Connection() *sql.DB {
 }
 
 func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
+	// defines when to timeout
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -63,6 +65,61 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 	}
 
 	return movies, nil
+}
+
+func (m *PostgresDBRepo) OneMovie(id int) (*models.Movie, error) {
+	fmt.Print("one_movie")
+	fmt.Println("onemovie")
+	// defines when to timeout
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `select id, title, release_date, runtime, mpaa_rating, description, coalesce(image, ''), created_at, updated_at from movies where id = $1`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+
+	var movie models.Movie
+	err := row.Scan(&movie.Id, &movie.Title, &movie.ReleaseDate,
+		&movie.RunTime, &movie.MPAARating, &movie.Description, &movie.Image, &movie.CreatedAt, &movie.UpdatedAt)
+
+	fmt.Println("err")
+	if err != nil {
+		fmt.Println("err1")
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// get genres. genre + movie_genres
+	query = `select g.id, g.genre from movies_genres mg left join genres g on (mg.genre_id = g.id) where mg.movie_id = $1 order by g.genre`
+
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err2")
+		fmt.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var genres []*models.Genre
+
+	for rows.Next() {
+		var g models.Genre
+		err := rows.Scan(
+			// copy the first element of the row to the destination (g.ID)
+			&g.ID,
+			// copy the 2nd element of the row to the destination (g.Genre)
+			&g.Genre,
+		)
+		if err != nil {
+			fmt.Println("err3")
+			fmt.Println(err)
+			return nil, err
+		}
+		genres = append(genres, &g)
+	}
+
+	movie.Genres = genres
+
+	return &movie, err
 }
 
 func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
