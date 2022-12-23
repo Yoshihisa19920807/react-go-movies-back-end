@@ -1,4 +1,5 @@
-// この辺全部DBから受け取った結果をJSONでフロントに返す関数
+// この辺全部DBから受け取った結果をJSONでフロントに返す関数（handler)
+// handlerは基本(w http.ResponseWriter, r *http.Request)の形
 package main
 
 import (
@@ -253,4 +254,14 @@ func (app *application) MovieForEdit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, payload)
+}
+
+func (app *application) AllGenres(w http.ResponseWriter, r *http.Request) {
+	genres, err := app.DB.AllGenres()
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, genres)
 }
