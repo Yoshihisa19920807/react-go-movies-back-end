@@ -242,12 +242,16 @@ func (app *application) MovieForEdit(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	movieID, err := strconv.Atoi(id)
 	if err != nil {
+		fmt.Println("err_movieID")
+		fmt.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
 
 	movie, genres, err := app.DB.OneMovieForEdit(movieID)
 	if err != nil {
+		fmt.Println("err_movie, genres")
+		fmt.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
