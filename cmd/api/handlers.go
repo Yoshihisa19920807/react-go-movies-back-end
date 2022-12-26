@@ -238,6 +238,7 @@ func (app *application) GetMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) MovieForEdit(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("MovieForEdit(w http.Resp")
 	id := chi.URLParam(r, "id")
 	movieID, err := strconv.Atoi(id)
 	if err != nil {
@@ -272,19 +273,36 @@ func (app *application) AllGenres(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("InsertMovie(w http.ResponseWriter")
 	var movie models.Movie
 	err := app.readJSON(w, r, &movie)
 	if err != nil {
+		fmt.Println("err1")
+		fmt.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
 	// try to get an image
 	movie = app.getPoster(movie)
+	fmt.Println("movie")
+	fmt.Println(movie)
 
 	movie.CreatedAt = time.Now()
 	movie.UpdatedAt = time.Now()
+	newID, err := app.DB.InsertMovie(movie)
+	if err != nil {
+		fmt.Println("err2")
+		fmt.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
 
 	// now handle genres
+	err = app.DB.UpdateMovieGenres(newID, movie.GenresArray)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
 	resp := JSONResponse{
 		Error:   false,
@@ -304,7 +322,7 @@ func (app *application) getPoster(movie models.Movie) models.Movie {
 	}
 
 	client := &http.Client{}
-	Url := fmt.Sprintf("https://api.themoviedb.org/3/movie/550?api_key=%s", app.APIKey)
+	Url := fmt.Sprintf("https://api.themoviedb.org/3/search/movie?api_key=%s", app.APIKey)
 	req, err := http.NewRequest("GET", Url+"&query="+url.QueryEscape(movie.Title), nil)
 	if err != nil {
 		log.Println(err)
@@ -315,9 +333,13 @@ func (app *application) getPoster(movie models.Movie) models.Movie {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("errresp")
+		fmt.Println(err)
+		log.Println("err__resp")
 		log.Println(err)
 		return movie
 	}
+
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -330,6 +352,8 @@ func (app *application) getPoster(movie models.Movie) models.Movie {
 	json.Unmarshal(bodyBytes, &responseObject)
 
 	if len(responseObject.Results) > 0 {
+		fmt.Println("responseObject.Results[0].PosterPath")
+		fmt.Println(responseObject.Results[0])
 		movie.Image = responseObject.Results[0].PosterPath
 	}
 	return movie
