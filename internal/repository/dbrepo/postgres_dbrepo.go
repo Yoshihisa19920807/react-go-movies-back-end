@@ -293,6 +293,13 @@ func (m *PostgresDBRepo) InsertMovie(movie models.Movie) (int, error) {
 
 }
 
+func (m *PostgresDBRepo) UpdateMovie(movie models.Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `update movies set title`
+}
+
 func (m *PostgresDBRepo) UpdateMovieGenres(id int, genreIDs []int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
