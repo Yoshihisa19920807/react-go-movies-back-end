@@ -37,6 +37,8 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 
 	if len(headers) > 0 {
 		for key, value := range headers[0] {
+			fmt.Println("key")
+			fmt.Println(key)
 			w.Header()[key] = value
 		}
 	}
