@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Movie struct {
-	Id          int       `json:"id"`
+	ID          int       `json:"id"`
 	Title       string    `json:"title"`
 	ReleaseDate time.Time `json:"release_date"`
 	RunTime     int       `json:"runtime"`

@@ -65,7 +65,7 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 	// rd, _ := time.Parse("2006-01-02", "2010-01-09")
 	// fmt.Print(rd)
 	// _500DaysOfSummer := models.Movie {
-	// 	Id: 1,
+	// 	ID: 1,
 	// 	Title: "500 days of Summer",
 	// 	ReleaseDate: rd,
 	// 	MPAARating: "PG-13",
@@ -79,7 +79,7 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 
 	// rd, _ = time.Parse("2006-01-02", "2009-03-20")
 	// YesMan:= models.Movie {
-	// 	Id: 2,
+	// 	ID: 2,
 	// 	Title: "Yes Man",
 	// 	ReleaseDate: rd,
 	// 	MPAARating: "PG-13",
@@ -311,6 +311,48 @@ func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Error:   false,
 		Message: "",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, resp)
+}
+
+func (app *application) UpdateMovie(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("func (app *application) UpdateMovie(w http.ResponseWriter, r *http.Request) {")
+	var payload models.Movie
+
+	// assigin data retrieved by r to payload
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movie, err := app.DB.OneMovie(payload.ID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	movie.Title = payload.Title
+	movie.Description = payload.Description
+	movie.ReleaseDate = payload.ReleaseDate
+	movie.MPAARating = payload.MPAARating
+	movie.RunTime = payload.RunTime
+	movie.UpdatedAt = time.Now()
+
+	err = app.DB.UpdateMovie(*movie)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateMovieGenres(movie.ID, payload.GenresArray)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	resp := JSONResponse{
+		Error:   false,
+		Message: "Movie updated",
 	}
 
 	app.writeJSON(w, http.StatusAccepted, resp)
