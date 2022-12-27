@@ -104,6 +104,23 @@ func (app *application) AllMovies(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (app *application) AllMoviesByGenre(w http.ResponseWriter, r *http.Request) {
+	// get id params
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	movies, err := app.DB.AllMovies(id)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, movies)
+}
+
 func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	// read json payload
 	var requestPayload struct {
